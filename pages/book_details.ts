@@ -15,14 +15,15 @@ const router = express.Router();
  */
 router.get('/', async (req, res) => {
   const id = req.query.id as string;
+  const sanitizedId = id.replace(/[^\w\s]/gi, '');
   try {
     const [book, copies] = await Promise.all([
-      Book.getBook(id),
-      BookInstance.getBookDetails(id)
+      Book.getBook(sanitizedId),
+      BookInstance.getBookDetails(sanitizedId)
     ]);
 
     if (!book) {
-      res.status(404).send(`Book ${id} not found`);
+      res.status(404).send(`Book ${sanitizedId} not found`);
       return;
     }
 
@@ -33,7 +34,7 @@ router.get('/', async (req, res) => {
     });
   } catch (err) {
     console.error('Error fetching book:', err);
-    res.status(500).send(`Error fetching book ${id}`);
+    res.status(500).send(`Error fetching book ${sanitizedId}`);
   }
 });
 
